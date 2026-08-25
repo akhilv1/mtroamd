@@ -21,6 +21,7 @@ require (
 )
 
 require (
+	github.com/shirou/gopsutil/v4 v4.26.7 // indirect
 	github.com/x448/float16 v0.8.4 // indirect
 	golang.org/x/net v0.56.0 // indirect
 )

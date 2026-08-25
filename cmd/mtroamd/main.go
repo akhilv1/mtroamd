@@ -4,15 +4,15 @@
 //
 //   - version : print build identifier and exit
 //   - serve   : long-running daemon that owns the session registry,
-//               listens for SSH-bootstrapped connect requests over a
-//               unix socket, and accepts QUIC connections from paired
-//               iOS clients
+//     listens for SSH-bootstrapped connect requests over a
+//     unix socket, and accepts QUIC connections from paired
+//     iOS clients
 //   - connect : invoked over SSH by the iOS client; talks to the local
-//               serve process over the unix socket, prints the
-//               MTRM_QUIC bootstrap line on stdout, exits
+//     serve process over the unix socket, prints the
+//     MTRM_QUIC bootstrap line on stdout, exits
 //   - list    : enumerate live sessions on the local daemon. JSON
-//               output (--json) is the wire shape iOS consumes via
-//               SSH for its session-picker UI.
+//     output (--json) is the wire shape iOS consumes via
+//     SSH for its session-picker UI.
 //   - kill    : reap a session by hex SessionID or by Name.
 //
 // See docs/mtroam-protocol.md for the wire specification.
@@ -50,6 +50,12 @@ func main() {
 		os.Exit(runSessionInfo(args))
 	case "status":
 		os.Exit(runStatus(args))
+	case "stats":
+		if err := statsCmd(args); err != nil {
+			fmt.Fprintf(os.Stderr, "mtroamd: %v\n", err)
+			os.Exit(1)
+		}
+		os.Exit(0)
 	case "session-search":
 		os.Exit(runSessionSearch(args))
 	case "set-secrets":
