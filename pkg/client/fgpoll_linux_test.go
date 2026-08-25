@@ -1,6 +1,6 @@
 //go:build linux
 
-package ptyclient
+package client
 
 import (
 	"os"

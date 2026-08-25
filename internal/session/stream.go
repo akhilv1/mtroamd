@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/AG-Studio-Apps/mtroamd/internal/protocol"
+	"github.com/AG-Studio-Apps/mtroamd/pkg/protocol"
 )
 
 // streamMaxLogBytes bounds a stream-backed session's retained frame history.

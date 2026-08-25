@@ -30,7 +30,7 @@ import (
 	"github.com/AG-Studio-Apps/mtroamd/internal/build"
 	"github.com/AG-Studio-Apps/mtroamd/internal/cert"
 	"github.com/AG-Studio-Apps/mtroamd/internal/ipc"
-	"github.com/AG-Studio-Apps/mtroamd/internal/ptyclient"
+	"github.com/AG-Studio-Apps/mtroamd/pkg/client"
 	"github.com/AG-Studio-Apps/mtroamd/internal/secret"
 	"github.com/AG-Studio-Apps/mtroamd/internal/session"
 	"github.com/AG-Studio-Apps/mtroamd/internal/transport"
@@ -413,7 +413,7 @@ func New(cfg Config) (*Daemon, error) {
 	// PTY into the corresponding Session. Sessions whose sidecars
 	// died (or never had one) fall through to the lazy-spawn path on
 	// next attach, same as v0.5.x behaviour.
-	if discovered, dErr := ptyclient.Discover(context.Background(), reg, stateDir, logger); dErr != nil {
+	if discovered, dErr := client.Discover(context.Background(), reg, stateDir, logger); dErr != nil {
 		logger.Warn("session.sidecar.discovery_failed", "err", dErr.Error())
 	} else if discovered > 0 {
 		logger.Info("session.sidecar.reattached", "count", discovered)
@@ -446,7 +446,7 @@ func New(cfg Config) (*Daemon, error) {
 			// the ctx for the bounded 3 s dial-with-backoff, and a
 			// daemon-shutdown that races a fresh spawn will just
 			// see the sidecar disconnect cleanly via socket-close.
-			conn, err := ptyclient.SpawnNew(context.Background(), ptyclient.SpawnConfig{
+			conn, err := client.SpawnNew(context.Background(), client.SpawnConfig{
 				SessionID:    sess.ID().String(),
 				Rows:         rows,
 				Cols:         cols,
@@ -1298,7 +1298,7 @@ func (d *Daemon) spawnSession(req ipc.AllocateRequest) (*session.Session, error)
 
 	// Spawn the PTY-owning sidecar process. The sidecar holds the
 	// child shell as a direct subprocess and survives subsequent
-	// daemon restarts; the returned *ptyclient.Conn implements
+	// daemon restarts; the returned *client.Conn implements
 	// session.PTY and slots in everywhere a *pty.Handle used to.
 	//
 	// MESHTERM_ROAM=1 lets user shells short-circuit auto-tmux blocks
@@ -1325,7 +1325,7 @@ func (d *Daemon) spawnSession(req ipc.AllocateRequest) (*session.Session, error)
 	// Shim env LAST, prepending the shim dir to the user's PATH (req.Env
 	// PATH if set, else the daemon's) - so a client's custom PATH survives.
 	extraEnv = append(extraEnv, shimSpawnEnv(d.stateDir, sid.String(), req.Env["PATH"])...)
-	ptyHandle, err := ptyclient.SpawnNew(context.Background(), ptyclient.SpawnConfig{
+	ptyHandle, err := client.SpawnNew(context.Background(), client.SpawnConfig{
 		SessionID:    sid.String(),
 		Shell:        req.Shell,
 		ShellArgs:    req.Exec,
@@ -1365,7 +1365,7 @@ func (d *Daemon) spawnSession(req ipc.AllocateRequest) (*session.Session, error)
 
 	// Record the sidecar's live-inject hook state on the session so it
 	// is persisted (meta.cbor) and surfaced on this + future allocates
-	// via AllocateResponse.HookInstalled. ptyHandle is the *ptyclient.Conn
+	// via AllocateResponse.HookInstalled. ptyHandle is the *client.Conn
 	// that carries the value the detached sidecar reported.
 	sess.SetHookInstalled(ptyHandle.HookInstalled())
 	// shimReady is the sidecar-verified value (it re-asserts the shim dir

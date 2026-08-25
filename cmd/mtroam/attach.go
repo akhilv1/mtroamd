@@ -14,7 +14,7 @@ import (
 
 	"github.com/quic-go/quic-go"
 
-	"github.com/AG-Studio-Apps/mtroamd/internal/protocol"
+	"github.com/AG-Studio-Apps/mtroamd/pkg/protocol"
 )
 
 // runAttach is the Tier 3 headline: SSH-bootstrap → QUIC handshake →

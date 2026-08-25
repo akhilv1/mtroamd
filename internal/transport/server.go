@@ -19,7 +19,7 @@ import (
 
 	"github.com/quic-go/quic-go"
 
-	"github.com/AG-Studio-Apps/mtroamd/internal/protocol"
+	"github.com/AG-Studio-Apps/mtroamd/pkg/protocol"
 )
 
 // DefaultQUICPort is the preferred UDP port the daemon binds when

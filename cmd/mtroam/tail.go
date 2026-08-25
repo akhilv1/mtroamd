@@ -16,7 +16,7 @@ import (
 	"time"
 
 	"github.com/AG-Studio-Apps/mtroamd/internal/ipc"
-	"github.com/AG-Studio-Apps/mtroamd/internal/protocol"
+	"github.com/AG-Studio-Apps/mtroamd/pkg/protocol"
 )
 
 // runTail attaches to an existing session in AttachModePassive (the

@@ -1,6 +1,6 @@
 //go:build !linux && !darwin
 
-package ptyclient
+package client
 
 // Stub leaf lookups for platforms without an fg implementation (e.g.
 // freebsd). The shared poller loop (fgpoll.go) calls these; returning

@@ -15,7 +15,7 @@ import (
 
 	"github.com/quic-go/quic-go"
 
-	"github.com/AG-Studio-Apps/mtroamd/internal/protocol"
+	"github.com/AG-Studio-Apps/mtroamd/pkg/protocol"
 )
 
 // dialDaemonQUIC opens a QUIC connection to the daemon at host:port

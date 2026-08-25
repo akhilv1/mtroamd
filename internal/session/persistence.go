@@ -12,7 +12,7 @@ import (
 	"github.com/fxamacker/cbor/v2"
 
 	"github.com/AG-Studio-Apps/mtroamd/internal/altscreen"
-	"github.com/AG-Studio-Apps/mtroamd/internal/protocol"
+	"github.com/AG-Studio-Apps/mtroamd/pkg/protocol"
 )
 
 // maxPersistedBufCapacity caps the BufCapacity field in a persisted

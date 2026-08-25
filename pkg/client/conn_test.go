@@ -1,4 +1,4 @@
-package ptyclient
+package client
 
 import (
 	"bytes"

@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/AG-Studio-Apps/mtroamd/internal/protocol"
+	"github.com/AG-Studio-Apps/mtroamd/pkg/protocol"
 )
 
 // TestStreamSession_ToyClockProducer is the seam's "generic" acceptance test:

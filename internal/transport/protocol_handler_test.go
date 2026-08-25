@@ -12,7 +12,7 @@ import (
 	"github.com/fxamacker/cbor/v2"
 	"github.com/quic-go/quic-go"
 
-	"github.com/AG-Studio-Apps/mtroamd/internal/protocol"
+	"github.com/AG-Studio-Apps/mtroamd/pkg/protocol"
 	"github.com/AG-Studio-Apps/mtroamd/internal/session"
 )
 

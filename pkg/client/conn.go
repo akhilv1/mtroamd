@@ -4,7 +4,7 @@
 // a sidecar-backed PTY with no changes to its loop. The sidecar
 // itself lives at internal/ptysidecar; the wire format is documented
 // there.
-package ptyclient
+package client
 
 import (
 	"bytes"

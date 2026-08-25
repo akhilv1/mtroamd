@@ -1,6 +1,6 @@
 //go:build integration
 
-package ptyclient
+package client
 
 import (
 	"context"

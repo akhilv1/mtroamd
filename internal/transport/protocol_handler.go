@@ -12,7 +12,7 @@ import (
 	"time"
 
 	"github.com/AG-Studio-Apps/mtroamd/internal/altscreen"
-	"github.com/AG-Studio-Apps/mtroamd/internal/protocol"
+	"github.com/AG-Studio-Apps/mtroamd/pkg/protocol"
 	"github.com/AG-Studio-Apps/mtroamd/internal/session"
 )
 

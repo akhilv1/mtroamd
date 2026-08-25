@@ -20,7 +20,7 @@ import (
 	"github.com/quic-go/quic-go"
 
 	"github.com/AG-Studio-Apps/mtroamd/internal/ipc"
-	"github.com/AG-Studio-Apps/mtroamd/internal/protocol"
+	"github.com/AG-Studio-Apps/mtroamd/pkg/protocol"
 	"github.com/AG-Studio-Apps/mtroamd/internal/session"
 )
 

@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/AG-Studio-Apps/mtroamd/internal/protocol"
+	"github.com/AG-Studio-Apps/mtroamd/pkg/protocol"
 )
 
 // waitAltModel blocks until Pump has fed the screen-model into the alt buffer

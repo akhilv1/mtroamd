@@ -1,6 +1,6 @@
 //go:build darwin
 
-package ptyclient
+package client
 
 import "golang.org/x/sys/unix"
 
