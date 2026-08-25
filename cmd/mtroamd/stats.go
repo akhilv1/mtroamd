@@ -35,17 +35,24 @@ func statsCmd(args []string) error {
 		cancel()
 	}()
 
-	// Cancel on stdin EOF
-	go func() {
-		var buf [1]byte
-		for {
-			_, err := os.Stdin.Read(buf[:])
-			if err != nil {
-				cancel()
-				return
+	// Cancel on stdin EOF -- but ONLY while streaming.
+	//
+	// The point of this watchdog is that a --stream process must not linger on
+	// a managed host after the hub drops the SSH channel. For a one-shot
+	// sample it is actively harmful: an SSH exec typically has stdin at EOF
+	// immediately, so `ssh host mtroamd stats --json` cancelled itself before
+	// printing anything and exited 0 with no output.
+	if *stream {
+		go func() {
+			var buf [1]byte
+			for {
+				if _, err := os.Stdin.Read(buf[:]); err != nil {
+					cancel()
+					return
+				}
 			}
-		}
-	}()
+		}()
+	}
 
 	sampler := telemetry.NewSampler()
 	writer := bufio.NewWriter(os.Stdout)
