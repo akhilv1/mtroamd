@@ -23,8 +23,8 @@ import (
 
 	"github.com/AG-Studio-Apps/mtroamd/internal/cert"
 	"github.com/AG-Studio-Apps/mtroamd/internal/ipc"
-	"github.com/AG-Studio-Apps/mtroamd/pkg/protocol"
 	"github.com/AG-Studio-Apps/mtroamd/internal/session"
+	"github.com/AG-Studio-Apps/mtroamd/pkg/protocol"
 )
 
 // shortTempDir is t.TempDir()'s short cousin: t.TempDir encodes the
@@ -228,7 +228,13 @@ func TestDaemonPersistenceRoundTrip(t *testing.T) {
 		t.Fatal(err)
 	}
 	// Wait for the flusher to checkpoint at least once.
-	deadline := time.Now().Add(500 * time.Millisecond)
+	//
+	// Budget generously: this is a wall-clock wait on a background ticker in a
+	// package whose other tests spin up real daemons alongside it, and a tight
+	// budget made this fail on any loaded machine. A slow checkpoint is not the
+	// bug this test is looking for -- it is checking that state survives a
+	// restart at all.
+	deadline := time.Now().Add(10 * time.Second)
 	sessionDir := filepath.Join(tmp, "sessions", sid.String())
 	for time.Now().Before(deadline) {
 		if _, err := os.Stat(filepath.Join(sessionDir, "meta.cbor")); err == nil {
@@ -237,7 +243,7 @@ func TestDaemonPersistenceRoundTrip(t *testing.T) {
 		time.Sleep(20 * time.Millisecond)
 	}
 	if _, err := os.Stat(filepath.Join(sessionDir, "meta.cbor")); err != nil {
-		t.Fatalf("flusher did not write meta.cbor within 500ms: %v", err)
+		t.Fatalf("flusher did not checkpoint within 10s: %v", err)
 	}
 
 	// Stop the first daemon. The deferred Shutdown in Registry.Run
@@ -549,8 +555,8 @@ func TestDaemonAllocateReportsReused(t *testing.T) {
 		SessionID: "new",
 		Name:      "reused-bit",
 		Rows:      24, Cols: 80,
-		Shell:     "/bin/sh",
-		Exec:      []string{"-c", "while true; do sleep 1; done"},
+		Shell: "/bin/sh",
+		Exec:  []string{"-c", "while true; do sleep 1; done"},
 	})
 	if err != nil || !named.Ok {
 		t.Fatalf("named create: %v %s %s", err, named.Err, named.Msg)
@@ -627,9 +633,9 @@ func TestDaemonReattachUpdatesIdleTimeout(t *testing.T) {
 
 	// First allocate: 1h timeout (matches iOS's .oneHour preset).
 	first, err := c.Allocate(context.Background(), ipc.AllocateRequest{
-		SessionID:        "new",
-		Name:             "dev",
-		Rows:             24, Cols: 80,
+		SessionID: "new",
+		Name:      "dev",
+		Rows:      24, Cols: 80,
 		Shell:            "/bin/sh",
 		Exec:             []string{"-c", "while true; do sleep 1; done"},
 		IdleTimeoutNanos: int64(time.Hour),
@@ -667,9 +673,9 @@ func TestDaemonReattachUpdatesIdleTimeout(t *testing.T) {
 
 	// Reattach by NAME path (iOS create-if-missing). Drop back to 1h.
 	third, err := c.Allocate(context.Background(), ipc.AllocateRequest{
-		SessionID:        "new",
-		Name:             "dev",
-		Rows:             24, Cols: 80,
+		SessionID: "new",
+		Name:      "dev",
+		Rows:      24, Cols: 80,
 		IdleTimeoutNanos: int64(time.Hour),
 	})
 	if err != nil || !third.Ok {

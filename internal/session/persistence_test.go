@@ -411,24 +411,33 @@ func TestStartFlusherWritesOnInterval(t *testing.T) {
 		t.Fatalf("flusher did not write meta.cbor within 500ms: %v", err)
 	}
 
-	// Push more bytes; expect the next tick to update the file.
+	// Push more bytes; expect a subsequent tick to update the file.
 	_, _ = s.buf.Write([]byte("\nmore output"))
-	time.Sleep(120 * time.Millisecond)
 
-	// Verify the on-disk scrollback reflects the new content via a
-	// fresh Load.
-	reg := NewRegistry(0, time.Hour, time.Hour, 0)
-	if _, err := LoadPersisted(dir, reg, nullLogger()); err != nil {
-		t.Fatalf("LoadPersisted: %v", err)
+	// Poll rather than sleeping a fixed 120ms. This test is t.Parallel() with a
+	// 50ms ticker, so a fixed two-and-a-bit-tick budget is not survivable when
+	// the rest of the package is running alongside it -- it failed essentially
+	// every run on a loaded machine. The flusher itself is fine: it writes as
+	// soon as buf.HeadSeq() moves past lastSnapshotSeq.
+	want := "initial\nmore output"
+	var data []byte
+	settled := time.Now().Add(5 * time.Second)
+	for time.Now().Before(settled) {
+		reg := NewRegistry(0, time.Hour, time.Hour, 0)
+		if _, err := LoadPersisted(dir, reg, nullLogger()); err != nil {
+			t.Fatalf("LoadPersisted: %v", err)
+		}
+		restored, err := reg.Lookup(s.ID())
+		if err != nil {
+			t.Fatalf("Lookup: %v", err)
+		}
+		data, _, _ = restored.Buffer().ReadSince(0, 0)
+		if string(data) == want {
+			return
+		}
+		time.Sleep(20 * time.Millisecond)
 	}
-	restored, err := reg.Lookup(s.ID())
-	if err != nil {
-		t.Fatalf("Lookup: %v", err)
-	}
-	data, _, _ := restored.Buffer().ReadSince(0, 0)
-	if want := "initial\nmore output"; string(data) != want {
-		t.Errorf("restored buffer = %q, want %q", data, want)
-	}
+	t.Errorf("restored buffer = %q, want %q", data, want)
 }
 
 // TestFlusherFinalFlushOnClose: the ctx-done path inside the flusher
